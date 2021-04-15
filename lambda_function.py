@@ -55,16 +55,6 @@ def get_list(command_text):
     print(RunningInstances)
     return RunningInstances
     #instanceList = json.dumps(RunningInstances)
-'''if len(RunningInstances) != 0:
-        instanceList = json.dumps(RunningInstances)
-        print(instanceList)
-        print("Found instances ")
-    else:
-        print("none found")
-        instanceList = "No running Instances found"
-       
-    print(instanceList) 
-    return instanceList'''
 client = boto3.client('ec2')
 def add_rule(client, command_text):
     #command_array = (command_text.split(",")) 
@@ -99,92 +89,12 @@ def add_rule(client, command_text):
     response = http.request("POST", url, body=json.dumps(payload), headers={'Content-Type': 'application/json'})
     #RunningInstances = get_list(command_text)
     #print(RunningInstances)
-'''def get_id(command_text):
-        command_array = (command_text.split(",")) 
-        print(command_array)
-        if(len(command_array)) > 1:
-            numb = command_array[1]
-        print(numb)
-        RunningInstances = get_list(command_text="us-east-1")
-        print(RunningInstances)
-        ec2 = boto3.client('ec2')
-        for numb in range(len(RunningInstances)): 
-            print (RunningInstances[numb])
-            id = (RunningInstances[numb])
-        print(id)
-        response = ec2.describe_instances(InstanceIds=[id,],)
-        print(response)
-        response1 = client.describe_instance_attribute(
-    Attribute='groupSet',
-    InstanceId=id,
-)
 
-        print(response1)
-        sg = response1['Groups']
-        gp_id = sg[0]
-        sg_id = gp_id['GroupId']
-        print(sg_id)
-        
-        
-        http = urllib3.PoolManager()
-
-        url = "https://hooks.slack.com/services/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"
-        payload = {
-      "attachments": [
-        {
-          "fallback": "Message",
-          "text": ("Entered ID number"),
-          "fields": [
-            {
-              "title": "Your Security GroupID",
-              "value": (sg_id),
-            }
-          ],
-          "color": "red"
-        }
-      ],
-      "icon_emoji": "gun"
-    }
-        response = http.request("POST", url, body=json.dumps(payload), headers={'Content-Type': 'application/json'})    
-        
-        return sg_id
-
-dialog = {
-        
-        "title": "Request a Ride",
-        "submit_label": "Request",
-        "state": "Limo",
-        "elements": [
-            {
-                "type": "text",
-                "label": "Select Instance ID",
-                "name": "loc_origin"
-            },
-            {
-                "type": "text",
-                "label": "Dropoff Location",
-                "name": "loc_destination"
-            }
-        ]
-    }
-
-    api_data = {
-        "token": os.environ['SLACK_BOT_TOKEN'],
-        "trigger_id": trig_id,
-        "dialog": json.dumps(dialog)
-    }
-    
-  
- 
-    #res = get_running(command_text="running")
-    #payload = 
-    url = "https://hooks.slack.com/services/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" 
-    http = urllib3.PoolManager()
-    response = http.request("POST", url, body=json.dumps(api_data), headers={'Content-Type': 'application/json'})'''
-    
 def add_egress(command_text, group_ID):
     command_array = (command_text.split(",")) 
     print(command_array)
+    region_name = command_array[1]
+    client = boto3.client('ec2', region_name=region_name)
     IpProtocol = (command_array[2])
     FromPort = int(command_array[3])
     ToPort = int(command_array[4])
@@ -213,6 +123,8 @@ def add_egress(command_text, group_ID):
     
 def add_ingress(command_text, group_ID):
     command_array = (command_text.split(",")) 
+    region_name = command_array[1]
+    client = boto3.client('ec2', region_name=region_name)
     IpProtocol = (command_array[2])
     FromPort = int(command_array[3])
     ToPort = int(command_array[4])
@@ -239,11 +151,6 @@ def add_ingress(command_text, group_ID):
     return response_msg
 
 
-    
-    
-    
-    
-    
 region = 'us-east-1'    
 def get_running(command_text):
     command_array = (command_text.split(",")) 
@@ -375,13 +282,14 @@ def lambda_handler(event, context):
         command_array = (command_text.split(",")) 
         print(command_array)
         numb = command_array[0]
+        region_name = command_array[1]
         RunningInstances = get_list(command_text)
         id = RunningInstances[int(numb)]
         print(id)
-        ec2 = boto3.client('ec2')
+        ec2 = boto3.client('ec2', region_name=region_name)
         response = ec2.describe_instances(InstanceIds=[id,],)
         print(response)
-        client = boto3.client('ec2')
+        client = boto3.client('ec2', region_name=region_name)
         response1 = client.describe_instance_attribute(
     Attribute='groupSet',
     InstanceId=id,
@@ -414,7 +322,7 @@ def lambda_handler(event, context):
              "fields": [
                {
                  "title": (response_msg),
-                 "value": ("Format: InstanceID, index , IpProtocol, FromPort, ToPort, IpRanges, Description")
+                 "value": ("Format: InstanceID, Region , IpProtocol, FromPort, ToPort, IpRanges, Description")
                }
              ],
              "color": "red"
@@ -450,15 +358,16 @@ def lambda_handler(event, context):
         command_array = (command_text.split(",")) 
         print(command_array)
         numb = command_array[0]
+        region_name = command_array[1]
         RunningInstances = get_list(command_text)
         id = RunningInstances[int(numb)]
         print(id)
-        ec2 = boto3.client('ec2')
+        ec2 = boto3.client('ec2', region_name=region_name)
         print(id)
         response = ec2.describe_instances(InstanceIds=[id,],)
     
         print(response)
-        client = boto3.client('ec2')
+        client = boto3.client('ec2', region_name=region_name)
         response1 = client.describe_instance_attribute(
     Attribute='groupSet',
     InstanceId=id,
@@ -491,7 +400,7 @@ def lambda_handler(event, context):
              "fields": [
                {
                  "title": (response_msg),
-                 "value": ("Format: InstanceID, index , IpProtocol, FromPort, ToPort, IpRanges, Description")
+                 "value": ("Format: InstanceID, Region , IpProtocol, FromPort, ToPort, IpRanges, Description")
                }
              ],
              "color": "red"
@@ -514,7 +423,7 @@ def lambda_handler(event, context):
               "fields": [
                 {
                   "title": (response_msg),
-                  "value": ("Format: InstanceID, index , IpProtocol, FromPort, ToPort, IpRanges, Description")
+                  "value": ("Format: InstanceID, Region , IpProtocol, FromPort, ToPort, IpRanges, Description")
                 }
               ],
               "color": "red"
@@ -534,10 +443,10 @@ def lambda_handler(event, context):
           "attachments": [
             {
               "fallback": "Message",
-              "text": ("Stopping Instance"),
+              "text": ("Error!!"),
               "fields": [
                 {
-                  "title": (title),
+                  "title": (),
                   "value": (response_msg)
                 }
               ],
@@ -550,9 +459,10 @@ def lambda_handler(event, context):
                  
         
 def stop_instance(command_text):
-    client=boto3.client('ec2')
     command_array = (command_text.split(",")) 
     numb = command_array[0]
+    region_name = command_array[1]
+    client=boto3.client('ec2', region_name=region_name)
     print(command_array)
     RunningInstances = get_list(command_text)
     if len(RunningInstances) > 0 :
@@ -566,7 +476,7 @@ def stop_instance(command_text):
         Force=True|False
         )
     else:
-        response = "There is no instance to stop!!"
+        response = "The Instance is already been stopped!!"
         title = "------------------------------------"
     http = urllib3.PoolManager()
     url = "https://hooks.slack.com/services/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"
@@ -588,24 +498,4 @@ def stop_instance(command_text):
     }
     response = http.request("POST", url, body=json.dumps(payload), headers={'Content-Type': 'application/json'})    
     
-
-
-    
-    
-    
-    
-    
-    
-        
-def get_aws_security_group(group_id):
-    """
-    Return the defined Security Group
-    :param group_id:
-    :type group_id: str
-    :return:
-    """
-    ec2 = boto3.resource('ec2')
-    group = ec2.SecurityGroup(group_id)
-    if group.group_id == group_id:
-        return group        
    
