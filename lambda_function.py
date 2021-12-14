@@ -33,7 +33,7 @@ def get_list(command_text):
     RunInstances = []    
     
     ec2 = boto3.resource('ec2', region)
-    url = "https://hooks.slack.com/services/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"
+    url = "web-hook-url"
     
     filters = [
         {
@@ -66,7 +66,7 @@ def add_rule(client, command_text):
     #print(region)
     #get_running(command_text)
     http = urllib3.PoolManager()
-    url = "https://hooks.slack.com/services/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"
+    url = "web-hook-url"
     #response = http.request("POST", url, body=json.dumps(payload), headers={'Content-Type': 'application/json'})
     RunningInstances = get_list(command_text)
     Run = json.dumps(RunningInstances)
@@ -163,7 +163,7 @@ def get_running(command_text):
     RunInstances = []    
     
     ec2 = boto3.resource('ec2', region)
-    url = "https://hooks.slack.com/services/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"
+    url = "web-hook-url"
     
     filters = [
         {
@@ -197,7 +197,7 @@ def get_running(command_text):
    
     reg = json.dumps(region)  
     #msg = json.dumps(instanceList).encode('utf-8')
-    url = "https://hooks.slack.com/services/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"
+    url = "web-hook-url"
     payload = {
   "attachments": [
     {
@@ -259,7 +259,7 @@ def lambda_handler(event, context):
 
     elif "Security Group Rules" in command_text:
         http = urllib3.PoolManager()
-        url = "https://hooks.slack.com/services/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"
+        url = "web-hook-url"
         payload = {
       "attachments": [
         {
@@ -313,7 +313,7 @@ def lambda_handler(event, context):
            print("Exists")
            response_msg = json.dumps("Rules you are trying to add are already exists")
            http = urllib3.PoolManager()
-           url = "https://hooks.slack.com/services/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"
+           url = "web-hook-url"
            payload = {
          "attachments":  [
            {
@@ -335,7 +335,7 @@ def lambda_handler(event, context):
             response_msg = add_ingress(command_text, sg_id)
             print(response_msg)    
             http = urllib3.PoolManager()
-            url = "https://hooks.slack.com/services/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"
+            url = "web-hook-url"
             payload = {
           "attachments": [
             {
@@ -391,7 +391,7 @@ def lambda_handler(event, context):
            print("Exists")
            response_msg = json.dumps("Rules you are trying to add are already exists")
            http = urllib3.PoolManager()
-           url = "https://hooks.slack.com/services/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"
+           url = "web-hook-url"
            payload = {
          "attachments": [
            {
@@ -414,7 +414,7 @@ def lambda_handler(event, context):
             response_msg = add_egress(command_text, sg_id)
             print(response_msg)    
             http = urllib3.PoolManager()
-            url = "https://hooks.slack.com/services/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"
+            url = "web-hook-url"
             payload = {
           "attachments": [
             {
@@ -438,7 +438,7 @@ def lambda_handler(event, context):
     else:
         response_msg = json.dumps("Invalid Command, Enter commands according to the given format!!")
         http = urllib3.PoolManager()
-        url = "https://hooks.slack.com/services/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"
+        url = "web-hook-url"
         payload = {
           "attachments": [
             {
@@ -479,7 +479,7 @@ def stop_instance(command_text):
         response = "The Instance is already been stopped!!"
         title = "------------------------------------"
     http = urllib3.PoolManager()
-    url = "https://hooks.slack.com/services/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"
+    url = "web-hook-url"
     payload = {
       "attachments": [
         {
